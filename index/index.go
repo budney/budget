@@ -1,3 +1,14 @@
+// Copyright 2017 Len Budney. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+/*
+	Package Index provides constants and functions for reading
+	a spreadsheet that lists other spreadsheets: each one a budget
+	covering a particular date range. The app uses these functions
+	to look up the budget spreadsheets and determine which one(s)
+	a transaction should be added to.
+*/
 package index
 
 import (

@@ -1,3 +1,13 @@
+// Copyright 2017 Len Budney. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+/*
+	Package App provides the core app functionality. This file, flags.go,
+    provides support for parsing command-line flags and reading a JSON file
+    of runtime options, and merging the two so that options override the
+    config file which overrides the defailts.
+*/
 package app
 
 import (
@@ -9,11 +19,11 @@ import (
 	"path/filepath"
 )
 
-const defaultConfigDir = ".budget-update"    // Collect configs in one place
-const defaultConfigFile = "options.json"     // This is just the command options
-const defaultSecretFile = "client-auth.json" // This is just the command options
-const defaultAuthFile = "user-auth.json"
-const nullString = string(byte(0)) // Hard (but not impossible) to supply on command line
+const defaultConfigDir = ".budget-update"    // The defaultConfigDir contains all config files
+const defaultConfigFile = "options.json"     // The defaultConfigFile is read unless overridden
+const defaultSecretFile = "client-auth.json" // The defaultSecretFile contains app authentication
+const defaultAuthFile = "user-auth.json"     // The defaultAuthFile contains user authentication
+const nullString = string(byte(0)) // A string with a null byte
 
 // Struct for holding command-line flags related to sheets
 type Sheets struct {
