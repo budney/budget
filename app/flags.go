@@ -4,9 +4,9 @@
 
 /*
 	Package App provides the core app functionality. This file, flags.go,
-    provides support for parsing command-line flags and reading a JSON file
-    of runtime options, and merging the two so that options override the
-    config file which overrides the defailts.
+	provides support for parsing command-line flags and reading a JSON file
+	of runtime options, and merging the two so that options override the
+	config file which overrides the defailts.
 */
 package app
 

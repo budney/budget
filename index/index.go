@@ -19,12 +19,13 @@ import (
 	"time"
 )
 
-// Where in the spreadsheet are index records found?
+// The Range constant indicates where in the index spreadsheet to find the
+// index of budget spreadsheets.
 const Range = "Index!A2:E"
 
-// Struct for holding an index entry, representing a budget spreadsheet row
-// identifying the file, its start/end dates, and the last updated date/time.
-
+// An index.Record holds one index entry, representing one budget spreadsheet.
+// It identifies the sheet ID, its start and end dates (inclusive), and the
+// last date and time that sheet was updated.
 type Record struct {
 	Index         int
 	Filename      string
@@ -35,12 +36,19 @@ type Record struct {
 	IndexId       string
 }
 
+// getDate accepts a Time and returns a new Time object containing only the
+// date -- i.e., with the time elements zeroed out.
 func getDate(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
 }
 
 // An active record overlaps the specified date range, AND was not
 // updated after the end date
+
+// getActiveRecordTester returns a closure that tests whether a record is
+// active -- i.e., whether its start/end dates overlap with the specified
+// start and end values, and whether the record's last updated date was
+// prior to the record's end date.
 func getActiveRecordTester(start time.Time, end time.Time) func(Record) bool {
 	start = getDate(start)
 	end = getDate(end).Add(24 * time.Hour)

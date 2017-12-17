@@ -19,5 +19,5 @@ import (
 	"time"
 )
 
-const HeaderRange = "B1:H1"
-const DataRange = "B2:H"
+const HeaderRange = "B1:H1" // HeaderRange gives the location of the transaction header
+const DataRange = "B2:H"    // DataRange gives the location of the transactions
