@@ -72,9 +72,9 @@ func getActiveRecordTester(start time.Time, end time.Time) func(Record) bool {
 			return true
 		}
 
-		// This record was last updated before its period ended
+		// This record was last updated after its period ended
 		x := getDate(record.LastUpdated)
-		if x.Before(b) {
+		if x.After(b) {
 			return false
 		}
 
