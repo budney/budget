@@ -15,15 +15,17 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 )
 
 const defaultConfigDir = ".budget-update"    // The defaultConfigDir contains all config files
 const defaultConfigFile = "options.json"     // The defaultConfigFile is read unless overridden
 const defaultSecretFile = "client-auth.json" // The defaultSecretFile contains app authentication
 const defaultAuthFile = "user-auth.json"     // The defaultAuthFile contains user authentication
-const nullString = string(byte(0)) // A string with a null byte
+const nullString = string(byte(0))           // A string with a null byte
 
 // Struct for holding command-line flags related to sheets
 type Sheets struct {
@@ -33,11 +35,25 @@ type Sheets struct {
 	UserAuthFile   string
 }
 
+// Type for holding repeated arguments
+type arrayFlags []string
+
+func (i *arrayFlags) String() string {
+	return strings.Join(*i, ", ")
+}
+
+func (i *arrayFlags) Set(value string) error {
+	log.Printf("Called with value %s", value)
+	*i = append(*i, value)
+	return nil
+}
+
 // Struct for holding command-line flags related to web banking
 type Bank struct {
 	LoginUrl          string
 	Username          string
 	Password          string
+	Accounts          arrayFlags
 	SecurityQuestions map[string]string
 }
 
@@ -57,12 +73,7 @@ func ParseFlags() (Flags, error) {
 	flag.StringVar(&flags.Bank.LoginUrl, "bank-url", nullString, "The `URL` of the online banking web page")
 	flag.StringVar(&flags.Bank.Username, "bank-username", nullString, "Your online banking `username`")
 	flag.StringVar(&flags.Bank.Password, "bank-password", nullString, "Your online banking `password`")
-
-	// Need user info from the OS
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatalf("Can't get current user: %v", err)
-	}
+	flag.Var(&flags.Bank.Accounts, "account", "Name(s) of account(s) to download transactions for")
 
 	// Parse the command line
 	flag.Parse()
@@ -73,12 +84,16 @@ func ParseFlags() (Flags, error) {
 	if flags.Sheets.ConfigFileName != "" && flags.Sheets.ConfigFileName != nullString {
 		configFile = flags.Sheets.ConfigFileName
 	} else {
-		configFile = filepath.Join(usr.HomeDir, defaultConfigDir, defaultConfigFile)
+		configFile = defaultPath(defaultConfigFile)
 	}
 
 	// Read the configs from a file, and then overwrite with options
 	// that were set on the command line
-	options, _ := flagsFromFile(configFile)
+	options, err := flagsFromFile(configFile)
+	if err != nil {
+		// Error message was already printed
+		os.Exit(1)
+	}
 
 	// Copy any options set on the command line
 	if flags.Sheets.IndexSheetId != nullString {
@@ -101,15 +116,30 @@ func ParseFlags() (Flags, error) {
 		options.Bank.Password = flags.Bank.Password
 	}
 
+	if len(flags.Bank.Accounts) > 0 {
+		options.Bank.Accounts = flags.Bank.Accounts
+	}
+
 	// Very last, set default values, if they weren't already set
 	if options.Sheets.AppSecretFile == "" {
-		options.Sheets.AppSecretFile = filepath.Join(usr.HomeDir, defaultConfigDir, defaultSecretFile)
+		options.Sheets.AppSecretFile = defaultPath(defaultSecretFile)
 	}
 	if options.Sheets.UserAuthFile == "" {
-		options.Sheets.UserAuthFile = filepath.Join(usr.HomeDir, defaultConfigDir, defaultAuthFile)
+		options.Sheets.UserAuthFile = defaultPath(defaultAuthFile)
 	}
 
 	return options, nil
+}
+
+func defaultPath(fileName string) string {
+	// Get user info from the OS
+	usr, err := user.Current()
+	if err != nil {
+		log.Fatalf("Can't get current user: %v", err)
+	}
+
+	// Return the default path to fileName
+	return filepath.Join(usr.HomeDir, defaultConfigDir, fileName)
 }
 
 func flagsFromFile(fileName string) (Flags, error) {
