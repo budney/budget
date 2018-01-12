@@ -30,13 +30,13 @@ type Spreadsheet struct {
 
 // A Transaction contains information about a single transaction.
 type Transaction struct {
-	Index       int       // A counter for sorting transactions on the same Date
-	Date        time.Time // The date of the transaction
-	Type        string    // A type description, such as POS, Check, ATM, etc.
-	Description string    // Usually the payor / payee of the transaction
-	Debit       int64     // The debit amount
-	Credit      int64     // The credit amount
-	Balance     int64     // The balance after the transaction
+	Index          int       // A counter for sorting transactions on the same Date
+	Date           time.Time // The date of the transaction
+	Type           string    // A type description, such as POS, Check, ATM, etc.
+	Description    string    // Usually the payor / payee of the transaction
+	DebitPennies   int64     // The debit amount, in pennies
+	CreditPennies  int64     // The credit amount, in pennies
+	BalancePennies int64     // The balance, in pennies, after the transaction
 }
 
 // Append accepts an array of transaction records and
@@ -58,9 +58,9 @@ func (spreadsheet *Spreadsheet) AppendArray(transactions []Transaction, workshee
 			transaction.Date.Format("1/2/2006"),
 			transaction.Type,
 			transaction.Description,
-			transaction.Debit / 100.0,
-			transaction.Credit / 100.0,
-			transaction.Balance / 100.0,
+			transaction.DebitPennies / 100.0,
+			transaction.CreditPennies / 100.0,
+			transaction.BalancePennies / 100.0,
 		})
 	}
 
