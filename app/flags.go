@@ -15,7 +15,6 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
-	"os"
 	"os/user"
 	"path/filepath"
 	"strings"
@@ -63,7 +62,7 @@ type Flags struct {
 	Bank   Bank
 }
 
-func ParseFlags() (Flags, error) {
+func ParseFlags() Flags {
 	var flags Flags
 
 	flag.StringVar(&flags.Sheets.IndexSheetId, "index-sheet-id", nullString, "Google drive `sheet-id` of the budget index")
@@ -89,11 +88,7 @@ func ParseFlags() (Flags, error) {
 
 	// Read the configs from a file, and then overwrite with options
 	// that were set on the command line
-	options, err := flagsFromFile(configFile)
-	if err != nil {
-		// Error message was already printed
-		os.Exit(1)
-	}
+	options := flagsFromFile(configFile)
 
 	// Copy any options set on the command line
 	if flags.Sheets.IndexSheetId != nullString {
@@ -128,7 +123,7 @@ func ParseFlags() (Flags, error) {
 		options.Sheets.UserAuthFile = defaultPath(defaultAuthFile)
 	}
 
-	return options, nil
+	return options
 }
 
 func defaultPath(fileName string) string {
@@ -142,20 +137,18 @@ func defaultPath(fileName string) string {
 	return filepath.Join(usr.HomeDir, defaultConfigDir, fileName)
 }
 
-func flagsFromFile(fileName string) (Flags, error) {
+func flagsFromFile(fileName string) Flags {
 	flags := Flags{}
 
 	b, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		log.Printf("Unable to read config file: %v", err)
-		return flags, err
+		log.Fatalf("Unable to read config file: %v", err)
 	}
 
 	err = json.Unmarshal(b, &flags)
 	if err != nil {
-		log.Printf("Unable to process config file: %v", err)
-		return flags, err
+		log.Fatalf("Unable to process config file: %v", err)
 	}
 
-	return flags, nil
+	return flags
 }
