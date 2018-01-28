@@ -51,7 +51,7 @@ func getDate(t time.Time) time.Time {
 // prior to the record's end date.
 func getActiveRecordTester(start time.Time, end time.Time) func(Record) bool {
 	start = getDate(start)
-	end = getDate(end).Add(24 * time.Hour)
+	end = getDate(end).Add(24*time.Hour - 1*time.Second) // Not leap-second proof
 
 	return func(record Record) bool {
 		a := getDate(record.Start)
