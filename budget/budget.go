@@ -15,6 +15,7 @@ import (
 	"github.com/budney/budget/index"
 	"google.golang.org/api/sheets/v4"
 	"log"
+	"sort"
 	"time"
 )
 
@@ -39,17 +40,40 @@ type Transaction struct {
 	BalancePennies int64     // The balance, in pennies, after the transaction
 }
 
-// Append accepts an array of transaction records and
-// appends them to the spreadsheet. It uses the worksheet whose
-// name exactly matches the account, and it puts the provided
+// A ByDate is an array of Transaction structs, which implements
+// sort.Interface to sort transactions by date and index.
+type ByDate []Transaction
+
+// Len returns the length of a ByDate array of transactions
+func (t ByDate) Len() int      { return len(t) }
+func (t ByDate) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
+func (t ByDate) Less(i, j int) bool {
+	if t[i].Date.Before(t[j].Date) {
+		return true
+	}
+	if t[i].Date.After(t[j].Date) {
+		return false
+	}
+	if t[i].Index < t[j].Index {
+		return true
+	}
+
+	return false
+}
+
+// Append accepts an array of transaction records and appends them to
+// the spreadsheet, sorted by Date and Index. It uses the worksheet
+// whose name exactly matches the account, and it puts the provided
 // category in the first spreadsheet column.
 //
-// NOTE! This method appends everything it's given, exactly
-// as given. It doesn't sort the records, or filter them
-// based on date, or anything else. If you call this method
-// directly, you should know what you're doing.
+// NOTE! This method appends everything it's given. It doesn't filter
+// the records based on date, or anything else. If you call this
+// method directly, you should know what you're doing.
 func (spreadsheet *Spreadsheet) AppendArray(transactions []Transaction, worksheet string, category string) error {
-	// Extract the transaction records in field order
+	// Sort the transactions in place by Date and Index
+	sort.Sort(ByDate(transactions))
+
+	// Extract the transaction records in column order
 	rows := make([][]interface{}, 2)
 	for _, transaction := range transactions {
 		rows = append(rows, []interface{}{
