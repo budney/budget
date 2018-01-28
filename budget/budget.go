@@ -61,8 +61,8 @@ func (t ByDate) Less(i, j int) bool {
 	return false
 }
 
-// Append accepts an array of transaction records and appends them to
-// the spreadsheet, sorted by Date and Index. It uses the worksheet
+// AppendArray accepts an array of transaction records and appends them
+// to the spreadsheet, sorted by Date and Index. It uses the worksheet
 // whose name exactly matches the account, and it puts the provided
 // category in the first spreadsheet column.
 //
