@@ -97,7 +97,7 @@ func FilterActiveRecords(history []Record, start time.Time, end time.Time) []Rec
 	return Filter(history, test)
 }
 
-func FromSpreadsheet(srv *sheets.Service, spreadsheetId string) ([]Record, error) {
+func FromGoogleSheet(srv *sheets.Service, spreadsheetId string) ([]Record, error) {
 	var history []Record
 
 	// Open the spreadsheet

@@ -69,7 +69,7 @@ func getBudgetIndex(flags app.Flags) []index.Record {
 		log.Fatalf("Couldn't initialize sheets service: %s", err)
 	}
 
-	index, err := index.FromSpreadsheet(srv, flags.Sheets.IndexSheetId)
+	index, err := index.FromGoogleSheet(srv, flags.Sheets.IndexSheetId)
 	if err != nil {
 		log.Fatalf("Couldn't read budget index: %s", err)
 	}
