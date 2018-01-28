@@ -68,7 +68,7 @@ func (spreadsheet *Spreadsheet) AppendArray(transactions []Transaction, workshee
 	valueRange := &sheets.ValueRange{Range: area, MajorDimension: "ROWS", Values: rows}
 	_, err := spreadsheet.Spreadsheets.Values.Append(spreadsheet.SpreadsheetId, area, valueRange).ValueInputOption("USER_ENTERED").Do()
 	if err != nil {
-		log.Printf("Couldn't append stuff: %s", err)
+		log.Printf("Couldn't append transactions: %s", err)
 		return err
 	}
 
