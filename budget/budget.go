@@ -16,6 +16,7 @@ import (
 	"google.golang.org/api/sheets/v4"
 	"log"
 	"sort"
+	"sync"
 	"time"
 )
 
@@ -40,25 +41,21 @@ type Transaction struct {
 	BalancePennies int64     // The balance, in pennies, after the transaction
 }
 
-// A ByDate is an array of Transaction structs, which implements
-// sort.Interface to sort transactions by date and index.
-type ByDate []Transaction
+// AppendFromChannel runs a goroutine that listens to a channel for
+// transactions, filters out the ones that don't apply, and appends
+// the rest to the budget spreadsheet for the specified account. It
+// does the append when the channel is closed by the writer.
+func (spreadsheet *Spreadsheet) AppendFromChannel(input <-chan Transaction, wait *sync.WaitGroup, worksheet string, category string) {
+	go func() {
+		transactions := make([]Transaction, 0, 2)
 
-// Len returns the length of a ByDate array of transactions
-func (t ByDate) Len() int      { return len(t) }
-func (t ByDate) Swap(i, j int) { t[i], t[j] = t[j], t[i] }
-func (t ByDate) Less(i, j int) bool {
-	if t[i].Date.Before(t[j].Date) {
-		return true
-	}
-	if t[i].Date.After(t[j].Date) {
-		return false
-	}
-	if t[i].Index < t[j].Index {
-		return true
-	}
+		for transaction := range input {
+			transactions = append(transactions, transaction)
+		}
 
-	return false
+		spreadsheet.AppendArray(transactions, worksheet, category)
+		wait.Done()
+	}()
 }
 
 // AppendArray accepts an array of transaction records and appends them

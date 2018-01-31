@@ -18,6 +18,7 @@ import (
 	"github.com/budney/tdbank"
 
 	"log"
+	"sync"
 	"time"
 )
 
@@ -28,13 +29,19 @@ func main() {
 	srv, _ := sheets.GetService(flags.Sheets.AppSecretFile, flags.Sheets.UserAuthFile)
 	spreadsheet := budget.Spreadsheet{index[len(index)-1], *srv}
 
-	transactions := getTransactions(flags)
-    rows := make([]budget.Transaction, len(transactions))
-    for i, v := range transactions {
-        rows[i] = budget.Transaction(v)
-    }
+	wait := new(sync.WaitGroup)
+	wait.Add(1)
 
-	spreadsheet.AppendArray(rows, "Joint Checking", "Uncategorized")
+	channel := make(chan budget.Transaction)
+	spreadsheet.AppendFromChannel(channel, wait, "Joint Checking", "Uncategorized")
+
+	transactions := getTransactions(flags)
+	for _, v := range transactions {
+		channel <- budget.Transaction(v)
+	}
+
+	close(channel)
+	wait.Wait()
 }
 
 func getTransactions(flags app.Flags) []tdbank.HistoryRecord {
