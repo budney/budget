@@ -68,7 +68,7 @@ func (spreadsheet *Spreadsheet) AppendFromChannel(input <-chan Transaction, wait
 // method directly, you should know what you're doing.
 func (spreadsheet *Spreadsheet) AppendArray(transactions []Transaction, worksheet string, category string) error {
 	// Sort the transactions in place by Date and Index
-	sort.Sort(ByDate(transactions))
+	sort.Sort(byDate(transactions))
 
 	// Extract the transaction records in column order
 	rows := make([][]interface{}, 2)
