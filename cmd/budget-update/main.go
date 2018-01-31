@@ -59,7 +59,7 @@ func getTransactions(flags app.Flags) []tdbank.HistoryRecord {
 
 	start := time.Date(2017, time.December, 31, 0, 0, 0, 0, time.Local)
 	end := time.Date(2018, time.January, 10, 0, 0, 0, 0, time.Local)
-	log.Printf("Date range: %s - %s", start.Format("1/2/2006"), end.Format("1/2/2006"))
+	log.Printf("Date range: %s - %s", start.Format("01/02/2006"), end.Format("01/02/2006"))
 
 	client.DownloadAccountHistory("Joint Checking", start, end)
 	history, err := client.ParseAccountHistory()
