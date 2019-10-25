@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-	Package Budget defines constants and provides functions for
-	working with a budget spreadsheet. This is where knowledge
-	is found about where transactions go in the sheet, as well
-	as any other information needed to update the sheet with
-	data downloaded from the bank.
-*/
+// Package budget defines constants and provides functions for
+// working with a budget spreadsheet. This is where knowledge
+// is found about where transactions go in the sheet, as well
+// as any other information needed to update the sheet with
+// data downloaded from the bank.
 package budget
 
 // A byDate is an array of Transaction structs, which implements

@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-	Package Index provides constants and functions for reading
-	a spreadsheet that lists other spreadsheets: each one a budget
-	covering a particular date range. The app uses these functions
-	to look up the budget spreadsheets and determine which one(s)
-	a transaction should be added to.
-*/
+// Package index provides constants and functions for reading
+// a spreadsheet that lists other spreadsheets: each one a budget
+// covering a particular date range. The app uses these functions
+// to look up the budget spreadsheets and determine which one(s)
+// a transaction should be added to.
 package index
 
 import (
@@ -19,11 +17,11 @@ import (
 	"time"
 )
 
-// The Range constant indicates where in the index spreadsheet to find the
-// index of budget spreadsheets.
+// Range is a constant that indicates where in the index spreadsheet to find the
+// list of budget spreadsheets.
 const Range = "Index!A2:E"
 
-// An index.Record holds one index entry, representing one budget spreadsheet.
+// Record holds one index entry, representing one budget spreadsheet.
 // It identifies the sheet ID, its start and end dates (inclusive), and the
 // last date and time that sheet was updated.
 type Record struct {
@@ -82,6 +80,9 @@ func getActiveRecordTester(start time.Time, end time.Time) func(Record) bool {
 	}
 }
 
+// Filter accepts an array of Records and a "test" function that
+// accepts a Record and returns a boolean. It returns an array
+// of those records for which the test function returned true.
 func Filter(history []Record, test func(Record) bool) (ret []Record) {
 	for _, record := range history {
 		if test(record) {
@@ -92,12 +93,16 @@ func Filter(history []Record, test func(Record) bool) (ret []Record) {
 	return ret
 }
 
+// FilterActiveRecords accepts an array of Records and a start and end date.
+// It returns an array of records dated between start and end.
 func FilterActiveRecords(history []Record, start time.Time, end time.Time) []Record {
 	test := getActiveRecordTester(start, end)
 	return Filter(history, test)
 }
 
-func FromGoogleSheet(srv *sheets.Service, spreadsheetId string) ([]Record, error) {
+// FromGoogleSheet uses the Google sheets service and specified spreadsheet ID
+// to read all the index Records on that sheet, which it returns as an array.
+func FromGoogleSheet(srv *sheets.Service, spreadsheetID string) ([]Record, error) {
 	var history []Record
 
 	// Open the spreadsheet
@@ -129,6 +134,9 @@ func FromGoogleSheet(srv *sheets.Service, spreadsheetId string) ([]Record, error
 	return history, nil
 }
 
+// FromSpreadsheetRow reads a row of spreadsheet data to initialize
+// a Record. It return the Record and/or an error. If an optional field
+// fails to parse, it will return both an error and a record.
 func FromSpreadsheetRow(index int, row []interface{}) (Record, error) {
 	record := Record{}
 	var err error

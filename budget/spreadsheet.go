@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-	Package Budget defines constants and provides functions for
-	working with a budget spreadsheet. This is where knowledge
-	is found about where transactions go in the sheet, as well
-	as any other information needed to update the sheet with
-	data downloaded from the bank.
-*/
+// Package budget defines constants and provides functions for
+// working with a budget spreadsheet. This is where knowledge
+// is found about where transactions go in the sheet, as well
+// as any other information needed to update the sheet with
+// data downloaded from the bank.
 package budget
 
 import (
@@ -19,10 +17,12 @@ import (
 	"sync"
 )
 
-const HeaderRange = "A1:H1" // HeaderRange gives the location of the transaction header
-const DataRange = "A2:H"    // DataRange gives the location of the transactions
+// HeaderRange gives the location of the transaction header
+const HeaderRange = "A1:H1"
+// DataRange gives the location of the transactions
+const DataRange = "A2:H"
 
-// A budget.Spreadsheet has the same structure as an index.Record, and holds
+// Spreadsheet has the same structure as a Record, and holds
 // high-level information about a spreadsheet.
 type Spreadsheet struct {
 	index.Record   // Location, date range covered, etc.

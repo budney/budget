@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-	Package App provides the core app functionality. This file, flags.go,
-	provides support for parsing command-line flags and reading a JSON file
-	of runtime options, and merging the two so that options override the
-	config file which overrides the defailts.
-*/
+// Package app provides the core app functionality. This file, flags.go,
+// provides support for parsing command-line flags and reading a JSON file
+// of runtime options, and merging the two so that options override the
+// config file which overrides the defailts.
 package app
 
 import (
@@ -26,7 +24,7 @@ const defaultSecretFile = "client-auth.json" // The defaultSecretFile contains a
 const defaultAuthFile = "user-auth.json"     // The defaultAuthFile contains user authentication
 const nullString = string(byte(0))           // A string with a null byte
 
-// Struct for holding command-line flags related to sheets
+// Sheets holds command-line flags related to spreadsheets
 type Sheets struct {
 	IndexSheetID   string
 	ConfigFileName string
@@ -47,7 +45,7 @@ func (i *arrayFlags) Set(value string) error {
 	return nil
 }
 
-// Struct for holding command-line flags related to web banking
+// Bank holds command-line flags related to web banking
 type Bank struct {
 	LoginURL          string
 	Username          string
@@ -56,12 +54,13 @@ type Bank struct {
 	SecurityQuestions map[string]string
 }
 
-// Struct for holding all the command-line flags
+// Flags holds all the command-line flags
 type Flags struct {
 	Sheets Sheets
 	Bank   Bank
 }
 
+// ParseFlags parses command-line flags
 func ParseFlags() Flags {
 	var flags Flags
 

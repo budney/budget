@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-/*
-	Command budget-update fetches transactions from one or
-	more sources, and forwards them one-by-one to one or
-	more destinations. Usually this means fetching from
-	a bank web site and writing to a Google spreadsheet.
-*/
+// Command budget-update fetches transactions from one or
+// more sources, and forwards them one-by-one to one or
+// more destinations. Usually this means fetching from
+// a bank web site and writing to a Google spreadsheet.
 package main
 
 import (
