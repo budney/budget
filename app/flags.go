@@ -134,7 +134,7 @@ func defaultPath(fileName string) string {
 	}
 
 	// Return the default path to fileName
-	return filepath.Join(usr.HomeDir, defaultConfigDir, fileName)
+	return filepath.Join(usr.HomeDir, defaultConfigDir, filepath.Clean(fileName))
 }
 
 func flagsFromFile(fileName string) Flags {
