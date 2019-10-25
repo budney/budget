@@ -60,10 +60,9 @@ type Flags struct {
 	Bank   Bank
 }
 
-// ParseFlags parses command-line flags
-func ParseFlags() Flags {
-	var flags Flags
-
+// readCommandLine uses the flag package to configure command-line options.
+func readCommandLine(flags Flags) {
+	// Configure command-line options
 	flag.StringVar(&flags.Sheets.IndexSheetID, "index-sheet-id", nullString, "Google drive `sheet-id` of the budget index")
 	flag.StringVar(&flags.Sheets.ConfigFileName, "config-file", nullString, "The `filename` of the config file to read at startup")
 	flag.StringVar(&flags.Sheets.AppSecretFile, "app-secret-file", nullString, "The `filename` for the app to authenticate with Google Drive")
@@ -75,7 +74,11 @@ func ParseFlags() Flags {
 
 	// Parse the command line
 	flag.Parse()
+}
 
+// readConfigFile reads the config file specified in flags, or else the
+// default.
+func readConfigFile(flags Flags) Flags {
 	var configFile string
 
 	// Read the defaults file, if any
@@ -87,34 +90,51 @@ func ParseFlags() Flags {
 
 	// Read the configs from a file, and then overwrite with options
 	// that were set on the command line
-	options := flagsFromFile(configFile)
+	return flagsFromFile(configFile)
+}
 
-	// Copy any options set on the command line
-	if flags.Sheets.IndexSheetID != nullString {
-		options.Sheets.IndexSheetID = flags.Sheets.IndexSheetID
+func copyOptions(src Flags, dest Flags) {
+	// Copy spreadsheet options
+	if src.Sheets.IndexSheetID != nullString {
+		dest.Sheets.IndexSheetID = src.Sheets.IndexSheetID
 	}
-	if flags.Sheets.ConfigFileName != nullString {
-		options.Sheets.ConfigFileName = flags.Sheets.ConfigFileName
+	if src.Sheets.ConfigFileName != nullString {
+		dest.Sheets.ConfigFileName = src.Sheets.ConfigFileName
 	}
-	if flags.Sheets.AppSecretFile != nullString {
-		options.Sheets.AppSecretFile = flags.Sheets.AppSecretFile
-	}
-
-	if flags.Bank.LoginURL != nullString {
-		options.Bank.LoginURL = flags.Bank.LoginURL
-	}
-	if flags.Bank.Username != nullString {
-		options.Bank.Username = flags.Bank.Username
-	}
-	if flags.Bank.Password != nullString {
-		options.Bank.Password = flags.Bank.Password
+	if src.Sheets.AppSecretFile != nullString {
+		dest.Sheets.AppSecretFile = src.Sheets.AppSecretFile
 	}
 
-	if len(flags.Bank.Accounts) > 0 {
-		options.Bank.Accounts = flags.Bank.Accounts
+	// Copy bank options
+	if src.Bank.LoginURL != nullString {
+		dest.Bank.LoginURL = src.Bank.LoginURL
+	}
+	if src.Bank.Username != nullString {
+		dest.Bank.Username = src.Bank.Username
+	}
+	if src.Bank.Password != nullString {
+		dest.Bank.Password = src.Bank.Password
 	}
 
-	// Very last, set default values, if they weren't already set
+	// Copy the list of accounts
+	if len(src.Bank.Accounts) > 0 {
+		dest.Bank.Accounts = src.Bank.Accounts
+	}
+}
+
+// ParseFlags parses command-line flags
+func ParseFlags() Flags {
+	// Read the command line flags. We have to do this
+	// first, in case they specify a different config file.
+	var flags Flags
+	readCommandLine(flags)
+
+	// Read the config file flags, and replace them with
+	// any command-line flags we received.
+	var options = readConfigFile(flags)
+	copyOptions(flags, options)
+
+	// Now set default authorization values, if they weren't already set
 	if options.Sheets.AppSecretFile == "" {
 		options.Sheets.AppSecretFile = defaultPath(defaultSecretFile)
 	}
@@ -125,6 +145,9 @@ func ParseFlags() Flags {
 	return options
 }
 
+// defaultPath takes the specified filename, and converts it into
+// an absolute path in the default subdirectory of the user's home
+// directory.
 func defaultPath(fileName string) string {
 	// Get user info from the OS
 	usr, err := user.Current()
@@ -136,6 +159,7 @@ func defaultPath(fileName string) string {
 	return filepath.Join(usr.HomeDir, defaultConfigDir, filepath.Clean(fileName))
 }
 
+// flagsFromFile reads the specified file and converts it into a Flags record.
 func flagsFromFile(fileName string) Flags {
 	flags := Flags{}
 
