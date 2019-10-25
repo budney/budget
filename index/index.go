@@ -32,8 +32,8 @@ type Record struct {
 	Start         time.Time
 	End           time.Time
 	LastUpdated   time.Time
-	SpreadsheetId string
-	IndexId       string
+	SpreadsheetID string
+	IndexID       string
 }
 
 // getDate accepts a Time and returns a new Time object containing only the
@@ -101,16 +101,16 @@ func FromGoogleSheet(srv *sheets.Service, spreadsheetId string) ([]Record, error
 	var history []Record
 
 	// Open the spreadsheet
-	response, err := srv.Spreadsheets.Values.Get(spreadsheetId, Range).Do()
+	response, err := srv.Spreadsheets.Values.Get(spreadsheetID, Range).Do()
 	if err != nil {
-		log.Printf("Unable to retrieve index from sheet ID %s: %v", spreadsheetId, err)
+		log.Printf("Unable to retrieve index from sheet ID %s: %v", spreadsheetID, err)
 		return history, err
 	}
 
 	// It's technically OK for there to be no index data, but we go
 	// ahead and log it
 	if len(response.Values) == 0 {
-		log.Printf("No index data found in sheet ID %s", spreadsheetId)
+		log.Printf("No index data found in sheet ID %s", spreadsheetID)
 		return history, nil
 	}
 
@@ -121,7 +121,7 @@ func FromGoogleSheet(srv *sheets.Service, spreadsheetId string) ([]Record, error
 			return history, err
 		}
 
-		record.IndexId = spreadsheetId
+		record.IndexID = spreadsheetID
 
 		history = append(history, record)
 	}
@@ -136,7 +136,7 @@ func FromSpreadsheetRow(index int, row []interface{}) (Record, error) {
 	// Strings are easy
 	record.Index = index
 	record.Filename = fmt.Sprintf("%s", row[0])
-	record.SpreadsheetId = fmt.Sprintf("%s", row[4])
+	record.SpreadsheetID = fmt.Sprintf("%s", row[4])
 
 	// Dates need parsed, and error-checked
 	record.Start, err = dateparse.ParseLocal(fmt.Sprintf("%s", row[1]))

@@ -28,7 +28,7 @@ const nullString = string(byte(0))           // A string with a null byte
 
 // Struct for holding command-line flags related to sheets
 type Sheets struct {
-	IndexSheetId   string
+	IndexSheetID   string
 	ConfigFileName string
 	AppSecretFile  string
 	UserAuthFile   string
@@ -49,7 +49,7 @@ func (i *arrayFlags) Set(value string) error {
 
 // Struct for holding command-line flags related to web banking
 type Bank struct {
-	LoginUrl          string
+	LoginURL          string
 	Username          string
 	Password          string
 	Accounts          arrayFlags
@@ -65,11 +65,11 @@ type Flags struct {
 func ParseFlags() Flags {
 	var flags Flags
 
-	flag.StringVar(&flags.Sheets.IndexSheetId, "index-sheet-id", nullString, "Google drive `sheet-id` of the budget index")
+	flag.StringVar(&flags.Sheets.IndexSheetID, "index-sheet-id", nullString, "Google drive `sheet-id` of the budget index")
 	flag.StringVar(&flags.Sheets.ConfigFileName, "config-file", nullString, "The `filename` of the config file to read at startup")
 	flag.StringVar(&flags.Sheets.AppSecretFile, "app-secret-file", nullString, "The `filename` for the app to authenticate with Google Drive")
 	flag.StringVar(&flags.Sheets.UserAuthFile, "user-auth-file", nullString, "The `filename` with cached user credentials for Google Drive")
-	flag.StringVar(&flags.Bank.LoginUrl, "bank-url", nullString, "The `URL` of the online banking web page")
+	flag.StringVar(&flags.Bank.LoginURL, "bank-url", nullString, "The `URL` of the online banking web page")
 	flag.StringVar(&flags.Bank.Username, "bank-username", nullString, "Your online banking `username`")
 	flag.StringVar(&flags.Bank.Password, "bank-password", nullString, "Your online banking `password`")
 	flag.Var(&flags.Bank.Accounts, "account", "Name(s) of account(s) to download transactions for")
@@ -91,8 +91,8 @@ func ParseFlags() Flags {
 	options := flagsFromFile(configFile)
 
 	// Copy any options set on the command line
-	if flags.Sheets.IndexSheetId != nullString {
-		options.Sheets.IndexSheetId = flags.Sheets.IndexSheetId
+	if flags.Sheets.IndexSheetID != nullString {
+		options.Sheets.IndexSheetID = flags.Sheets.IndexSheetID
 	}
 	if flags.Sheets.ConfigFileName != nullString {
 		options.Sheets.ConfigFileName = flags.Sheets.ConfigFileName
@@ -101,8 +101,8 @@ func ParseFlags() Flags {
 		options.Sheets.AppSecretFile = flags.Sheets.AppSecretFile
 	}
 
-	if flags.Bank.LoginUrl != nullString {
-		options.Bank.LoginUrl = flags.Bank.LoginUrl
+	if flags.Bank.LoginURL != nullString {
+		options.Bank.LoginURL = flags.Bank.LoginURL
 	}
 	if flags.Bank.Username != nullString {
 		options.Bank.Username = flags.Bank.Username
