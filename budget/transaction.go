@@ -4,6 +4,10 @@
 
 package budget
 
+import (
+    "time"
+)
+
 // A Transaction contains information about a single transaction.
 type Transaction struct {
 	Index          int       // A counter for sorting transactions on the same Date

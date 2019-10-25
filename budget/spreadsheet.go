@@ -17,7 +17,6 @@ import (
 	"log"
 	"sort"
 	"sync"
-	"time"
 )
 
 const HeaderRange = "A1:H1" // HeaderRange gives the location of the transaction header
